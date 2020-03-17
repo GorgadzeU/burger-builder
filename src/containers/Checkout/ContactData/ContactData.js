@@ -3,16 +3,63 @@ import React, { Component } from 'react';
 import classes from './ContactData.css';
 import Button from '../../../components/UI/Button/Button';
 import Spinner from '../../../components/UI/Spinner/Spinner';
+import Input from '../../../components/UI/Input/Input';
 import axios from '../../../axios';
 
 class ContactData extends Component {
 
     state = {
-        name: '',
-        email: '',
-        adress: {
-            street: '',
-            postalCode: ''
+        orderForm: {
+                name: {
+                    elementType: 'input',
+                    elementConfig: {
+                        type: 'text',
+                        placeholder: 'Your Name'
+                    },
+                    value: ''
+                },
+                street: {
+                    elementType: 'input',
+                    elementConfig: {
+                        type: 'text',
+                        placeholder: 'Street'
+                    },
+                    value: ''
+                },
+                postalCode: {
+                    elementType: 'input',
+                    elementConfig: {
+                        type: 'text',
+                        placeholder: 'ZIP Code'
+                    },
+                    value: ''
+                },
+                country: {
+                    elementType: 'input',
+                    elementConfig: {
+                        type: 'text',
+                        placeholder: 'Country'
+                    },
+                    value: ''
+                },
+                email: {
+                    elementType: 'input',
+                    elementConfig: {
+                        type: 'email',
+                        placeholder: 'Your E-Mail'
+                    },
+                    value: ''
+                },
+                deliveryMethod: {
+                    elementType: 'select',
+                    elementConfig: {
+                        options: [
+                            {vale: 'fastest', displayValue: 'Fastest'},
+                            {vale: 'cheapest', displayValue: 'Cheapest'}
+                        ]
+                    },
+                    value: ''
+                },
         },
         loadgin: false
     }
@@ -23,16 +70,6 @@ class ContactData extends Component {
         const order = {
             ingredients: this.props.ingredients,
             price: this.props.price,
-            costumer: {
-                name: 'Beqa',
-                adress: {
-                    street: 'testStreet',
-                    postalCode: '9021',
-                    country: 'Georgia'
-                },
-                email: 'Test@gmail.com'
-            },
-            deliveryMethod: 'Glovo'
         }
 
         axios.post('https://burger-builder-c5b46.firebaseio.com/orders.json', order)
@@ -45,12 +82,24 @@ class ContactData extends Component {
     }
 
     render() {
+        const formElementsArray = []
+        for (let key in this.state.orderForm) {
+            formElementsArray.push({
+                id: key,
+                config: this.state.orderForm[key]
+            })
+        }
+
         let form = (
         <form>
-            <input className={classes.Input} type='text' name='name' placeholder='Your Name'/>
-            <input className={classes.Input} type='email' name='email' placeholder='Your Mail'/>
-            <input className={classes.Input} type='text' name='street' placeholder='Street'/>
-            <input className={classes.Input} type='text' name='postal' placeholder='Postal Code'/>
+            {formElementsArray.map(formElement => (
+                <Input 
+                    key={formElement.id}
+                    elementType={formElement.config.elementType}
+                    elementConfig={formElement.config.elementConfig}
+                    value={formElement.config.value}    
+                />
+            ))}
             <Button btnType='Success' clicked={this.orderHandler}>ORDER</Button>
         </form>
         );
